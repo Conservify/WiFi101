@@ -46,6 +46,9 @@ enum {
 	SOCKET_STATE_ACCEPTED
 };
 
+DefaultWiFiAllocator defaultWiFiAllocator;
+WiFiAllocator *WiFiSocketClass::allocator = &defaultWiFiAllocator;
+
 WiFiSocketClass::WiFiSocketClass()
 {
 	for (int i = 0; i < MAX_SOCKET; i++) {
@@ -335,7 +338,7 @@ sint8 WiFiSocketClass::close(SOCKET sock)
 	_info[sock].parent = -1;
 
 	if (_info[sock].buffer.data != NULL) {
-		free(_info[sock].buffer.data);
+		allocator->free(_info[sock].buffer.data);
 	}
 	_info[sock].buffer.data = NULL;
 	_info[sock].buffer.head = NULL;
@@ -479,7 +482,7 @@ void WiFiSocketClass::handleEvent(SOCKET sock, uint8 u8Msg, void *pvMsg)
 int WiFiSocketClass::fillRecvBuffer(SOCKET sock)
 {
 	if (_info[sock].buffer.data == NULL) {
-		_info[sock].buffer.data = (uint8_t*)malloc(SOCKET_BUFFER_SIZE);
+		_info[sock].buffer.data = (uint8_t*)allocator->malloc(SOCKET_BUFFER_SIZE);
 		_info[sock].buffer.head = _info[sock].buffer.data;
 		_info[sock].buffer.length = 0;
 	}

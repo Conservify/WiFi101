@@ -28,7 +28,29 @@ extern "C" {
 #include <Arduino.h>
 #include <IPAddress.h>
 
+class WiFiAllocator {
+public:
+    virtual void *malloc(size_t size) = 0;
+    virtual void free(void *ptr) = 0;
+
+};
+
+class DefaultWiFiAllocator : public WiFiAllocator {
+public:
+    void *malloc(size_t size) override {
+        return malloc(size);
+    }
+
+    void free(void *ptr) override {
+        free(ptr);
+    }
+
+};
+
 class WiFiSocketClass {
+public:
+    static WiFiAllocator *allocator;
+
 public:
   WiFiSocketClass();
   virtual ~WiFiSocketClass();
