@@ -38,11 +38,11 @@ public:
 class DefaultWiFiAllocator : public WiFiAllocator {
 public:
     void *malloc(size_t size) override {
-        return malloc(size);
+        return ::malloc(size);
     }
 
     void free(void *ptr) override {
-        free(ptr);
+        ::free(ptr);
     }
 
 };
