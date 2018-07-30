@@ -46,8 +46,9 @@ enum {
 	SOCKET_STATE_ACCEPTED
 };
 
-DefaultWiFiAllocator defaultWiFiAllocator;
-WiFiAllocator *WiFiSocketClass::allocator = &defaultWiFiAllocator;
+DefaultWiFiCallbacks defaultWiFiCallbacks;
+
+WiFiCallbacks *WiFiSocketClass::callbacks = &defaultWiFiCallbacks;
 
 WiFiSocketClass::WiFiSocketClass()
 {
@@ -88,6 +89,9 @@ sint8 WiFiSocketClass::bind(SOCKET sock, struct sockaddr *pstrAddr, uint8 u8Addr
 	unsigned long start = millis();
 
 	while (_info[sock].state == SOCKET_STATE_BINDING && millis() - start < 2000) {
+    if (!callbacks->busy(millis() - start)) {
+        break;
+    }
 		m2m_wifi_handle_events(NULL);
 	}
 
@@ -118,6 +122,9 @@ sint8 WiFiSocketClass::listen(SOCKET sock, uint8 backlog)
 	unsigned long start = millis();
 
 	while (_info[sock].state == SOCKET_STATE_LISTEN && millis() - start < 2000) {
+    if (!callbacks->busy(millis() - start)) {
+      break;
+    }
 		m2m_wifi_handle_events(NULL);
 	}
 
@@ -145,6 +152,9 @@ sint8 WiFiSocketClass::connect(SOCKET sock, struct sockaddr *pstrAddr, uint8 u8A
 	unsigned long start = millis();
 
 	while (_info[sock].state == SOCKET_STATE_CONNECTING && millis() - start < 20000) {
+    if (!callbacks->busy(millis() - start)) {
+      break;
+    }
 		m2m_wifi_handle_events(NULL);
 	}
 
@@ -338,7 +348,7 @@ sint8 WiFiSocketClass::close(SOCKET sock)
 	_info[sock].parent = -1;
 
 	if (_info[sock].buffer.data != NULL) {
-		allocator->free(_info[sock].buffer.data);
+		callbacks->free(_info[sock].buffer.data);
 	}
 	_info[sock].buffer.data = NULL;
 	_info[sock].buffer.head = NULL;
@@ -482,7 +492,7 @@ void WiFiSocketClass::handleEvent(SOCKET sock, uint8 u8Msg, void *pvMsg)
 int WiFiSocketClass::fillRecvBuffer(SOCKET sock)
 {
 	if (_info[sock].buffer.data == NULL) {
-		_info[sock].buffer.data = (uint8_t*)allocator->malloc(SOCKET_BUFFER_SIZE);
+		_info[sock].buffer.data = (uint8_t*)callbacks->malloc(SOCKET_BUFFER_SIZE);
 		_info[sock].buffer.head = _info[sock].buffer.data;
 		_info[sock].buffer.length = 0;
 	}

@@ -28,14 +28,15 @@ extern "C" {
 #include <Arduino.h>
 #include <IPAddress.h>
 
-class WiFiAllocator {
+class WiFiCallbacks {
 public:
     virtual void *malloc(size_t size) = 0;
     virtual void free(void *ptr) = 0;
+    virtual bool busy(uint32_t elapsed) = 0;
 
 };
 
-class DefaultWiFiAllocator : public WiFiAllocator {
+class DefaultWiFiCallbacks : public WiFiCallbacks {
 public:
     void *malloc(size_t size) override {
         return ::malloc(size);
@@ -45,11 +46,15 @@ public:
         ::free(ptr);
     }
 
+    bool busy(uint32_t elapsed) override {
+        return true;
+    }
+
 };
 
 class WiFiSocketClass {
 public:
-    static WiFiAllocator *allocator;
+    static WiFiCallbacks *callbacks;
 
 public:
   WiFiSocketClass();
