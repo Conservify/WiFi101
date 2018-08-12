@@ -1033,6 +1033,9 @@ int WiFiClass::hostByName(const char* aHostname, IPAddress& aResult)
 		// Wait for connection or timeout:
 		unsigned long start = millis();
 		while (_resolve == 0 && millis() - start < 20000) {
+      if (!WifiCallbacksBusy(millis() - start)) {
+         break;
+      }
 			m2m_wifi_handle_events(NULL);
 		}
 

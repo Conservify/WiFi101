@@ -50,6 +50,10 @@ DefaultWiFiCallbacks defaultWiFiCallbacks;
 
 WiFiCallbacks *WiFiSocketClass::callbacks = &defaultWiFiCallbacks;
 
+bool WifiCallbacksBusy(uint32_t elapsed) {
+    return WiFiSocketClass::callbacks->busy(elapsed);
+}
+
 WiFiSocketClass::WiFiSocketClass()
 {
 	for (int i = 0; i < MAX_SOCKET; i++) {

@@ -52,6 +52,8 @@ public:
 
 };
 
+extern bool WifiCallbacksBusy(uint32_t elapsed);
+
 class WiFiSocketClass {
 public:
     static WiFiCallbacks *callbacks;
