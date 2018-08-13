@@ -209,8 +209,11 @@ void WiFiClass::handleEvent(uint8_t u8MsgType, void *pvMsg)
 		case M2M_WIFI_RESP_GET_SYS_TIME:
 		{
 			if (_resolve != 0) {
-				memcpy((tstrSystemTime *)_resolve, pvMsg, sizeof(tstrSystemTime));
+        if (_resolveSize == sizeof(_resolveSize)) {
+          memcpy((tstrSystemTime *)_resolve, pvMsg, sizeof(tstrSystemTime));
+        }
 
+        _resolveSize = 0;
 				_resolve = 0;
 			}
 		}
@@ -265,6 +268,7 @@ WiFiClass::WiFiClass()
 	_mode = WL_RESET_MODE;
 	_status = WL_NO_SHIELD;
 	_init = 0;
+  _resolveSize = 0;
 }
 
 void WiFiClass::setPins(int8_t cs, int8_t irq, int8_t rst, int8_t en)
@@ -1144,6 +1148,7 @@ uint32_t WiFiClass::getTime()
 	tstrSystemTime systemTime;
 
 	_resolve = (uint32_t)&systemTime;
+  _resolveSize = sizeof(tstrSystemTime);
 
 	m2m_wifi_get_sytem_time();
 
@@ -1169,6 +1174,7 @@ uint32_t WiFiClass::getTime()
 	}
 
 	_resolve = 0;
+  _resolveSize = 0;
 
 	return t;
 #endif

@@ -176,6 +176,7 @@ private:
 	uint32_t _gateway;
 	int _dhcp;
 	uint32_t _resolve;
+  size_t _resolveSize;
 	byte *_remoteMacAddress;
 	wl_mode_t _mode;
 	wl_status_t _status;
