@@ -385,6 +385,9 @@ uint8_t WiFiClass::begin()
 	while (!(_status & WL_CONNECTED) &&
 			!(_status & WL_DISCONNECTED) &&
 			millis() - start < 60000) {
+    if (!WifiCallbacksBusy(millis() - start)) {
+        break;
+    }
 		m2m_wifi_handle_events(NULL);
 	}
 
@@ -446,6 +449,9 @@ uint8_t WiFiClass::startConnect(const char *ssid, uint8_t u8SecType, const void 
 	while (!(_status & WL_CONNECTED) &&
 			!(_status & WL_DISCONNECTED) &&
 			millis() - start < 60000) {
+    if (!WifiCallbacksBusy(millis() - start)) {
+      break;
+    }
 		m2m_wifi_handle_events(NULL);
 	}
 	if (!(_status & WL_CONNECTED)) {
