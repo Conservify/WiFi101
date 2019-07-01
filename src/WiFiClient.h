@@ -58,6 +58,10 @@ public:
 	virtual IPAddress remoteIP();
 	virtual uint16_t remotePort();
 
+  SOCKET socket() const {
+      return _socket;
+  }
+
 private:
 	SOCKET _socket;
 
