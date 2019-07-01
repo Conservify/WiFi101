@@ -74,7 +74,7 @@ uint8_t WiFiServer::begin(uint8_t opt)
 	return 1;
 }
 
-WiFiClient WiFiServer::available(uint8_t* status)
+WiFiClient WiFiServer::available(uint8_t* status, bool only_new)
 {
 	if (status != NULL) {
 		*status = 0;
@@ -91,11 +91,13 @@ WiFiClient WiFiServer::available(uint8_t* status)
 			return WiFiClient(child);
 		}
 
-		for (SOCKET s = 0; s < TCP_SOCK_MAX; s++) {
-			if (WiFiSocket.hasParent(_socket, s) && WiFiSocket.available(s)) {
-				return WiFiClient(s);
-			}
-		}
+    if (!only_new) {
+      for (SOCKET s = 0; s < TCP_SOCK_MAX; s++) {
+        if (WiFiSocket.hasParent(_socket, s) && WiFiSocket.available(s)) {
+          return WiFiClient(s);
+        }
+      }
+    }
 	}
 
 	return WiFiClient();
