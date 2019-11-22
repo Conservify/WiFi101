@@ -60,9 +60,18 @@
 #if (defined __APS3_CORTUS__)
 #define M2M_LOG_LEVEL									M2M_LOG_INFO
 #else
-#define M2M_LOG_LEVEL									M2M_LOG_REQ
+#define M2M_LOG_LEVEL									M2M_LOG_DBG
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+#define CONF_WINC_DEBUG (1)
+unsigned long fkb_external_printf(const char *str, ...);
+#define CONF_WINC_PRINTF   fkb_external_printf
+#ifdef __cplusplus
+}
+#endif
 
 #define M2M_ERR(...)
 #define M2M_INFO(...)
