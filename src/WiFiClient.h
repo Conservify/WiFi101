@@ -35,9 +35,9 @@ public:
 	WiFiClient(uint8_t sock);
 
 	uint8_t status();
-	
-	int connectSSL(IPAddress ip, uint16_t port);
-	int connectSSL(const char* host, uint16_t port);
+
+	int connectSSL(IPAddress ip, uint16_t port, bool bypass_x509_verif);
+	int connectSSL(const char* host, uint16_t port, bool bypass_x509_verif);
 	virtual int connect(IPAddress ip, uint16_t port);
 	virtual int connect(const char* host, uint16_t port);
 	virtual size_t write(uint8_t);
@@ -65,8 +65,8 @@ public:
 private:
 	SOCKET _socket;
 
-	int connect(const char* host, uint16_t port, uint8_t opt);
-	int connect(IPAddress ip, uint16_t port, uint8_t opt, const uint8_t *hostname);
+	int connect(const char* host, uint16_t port, uint8_t opt, bool bypass_x509_verif = false);
+	int connect(IPAddress ip, uint16_t port, uint8_t opt, const uint8_t *hostname, bool bypass_x509_verif = false);
 };
 
 #endif /* WIFICLIENT_H */

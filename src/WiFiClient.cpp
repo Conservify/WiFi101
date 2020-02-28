@@ -33,36 +33,36 @@ WiFiClient::WiFiClient(uint8_t sock)
 	_socket = sock;
 }
 
-int WiFiClient::connectSSL(const char* host, uint16_t port)
+int WiFiClient::connectSSL(const char* host, uint16_t port, bool bypass_x509_verif)
 {
-	return connect(host, port, SOCKET_FLAGS_SSL);
+	return connect(host, port, SOCKET_FLAGS_SSL, bypass_x509_verif);
 }
 
-int WiFiClient::connectSSL(IPAddress ip, uint16_t port)
+int WiFiClient::connectSSL(IPAddress ip, uint16_t port, bool bypass_x509_verif)
 {
-	return connect(ip, port, SOCKET_FLAGS_SSL, 0);
+	return connect(ip, port, SOCKET_FLAGS_SSL, 0, bypass_x509_verif);
 }
 
 int WiFiClient::connect(const char* host, uint16_t port)
 {
-	return connect(host, port, 0);
+	return connect(host, port, 0, false);
 }
 
 int WiFiClient::connect(IPAddress ip, uint16_t port)
 {
-	return connect(ip, port, 0, 0);	
+	return connect(ip, port, 0, 0, false);
 }
 
-int WiFiClient::connect(const char* host, uint16_t port, uint8_t opt)
+int WiFiClient::connect(const char* host, uint16_t port, uint8_t opt, bool bypass_x509_verif)
 {
 	IPAddress remote_addr;
 	if (WiFi.hostByName(host, remote_addr)) {
-		return connect(remote_addr, port, opt, (const uint8_t *)host);
+		return connect(remote_addr, port, opt, (const uint8_t *)host, bypass_x509_verif);
 	}
 	return 0;
 }
 
-int WiFiClient::connect(IPAddress ip, uint16_t port, uint8_t opt, const uint8_t *hostname)
+int WiFiClient::connect(IPAddress ip, uint16_t port, uint8_t opt, const uint8_t *hostname, bool bypass_x509_verif)
 {
 	struct sockaddr_in addr;
 
@@ -82,6 +82,11 @@ int WiFiClient::connect(IPAddress ip, uint16_t port, uint8_t opt, const uint8_t 
 
 	if (opt & SOCKET_FLAGS_SSL && hostname) {
 		WiFiSocket.setopt(_socket, SOL_SSL_SOCKET, SO_SSL_SNI, hostname, m2m_strlen((uint8_t *)hostname));
+
+        if (bypass_x509_verif) {
+            uint8_t flag_val = 1U;
+            WiFiSocket.setopt(_socket, SOL_SSL_SOCKET, SO_SSL_BYPASS_X509_VERIF, &flag_val, 1u);
+        }
 	}
 
 	// Connect to remote host:
