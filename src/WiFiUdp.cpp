@@ -69,7 +69,7 @@ uint8_t WiFiUDP::begin(uint16_t port)
 		return 0;
 	}
 
-    fkb_external_printf("WiFiUDP::begin(%d) = %d\n", port, _socket);
+    // fkb_external_printf("WiFiUDP::begin(%d) = %d\n", port, _socket);
 
 	return 1;
 }
@@ -109,7 +109,7 @@ void WiFiUDP::stop()
 		return;
 	}
 
-    fkb_external_printf("WiFiUDP::stop(%d)\n", _socket);
+    // fkb_external_printf("WiFiUDP::stop(%d)\n", _socket);
 
 	WiFiSocket.close(_socket);
 	_socket = -1;
@@ -145,7 +145,7 @@ int WiFiUDP::endPacket()
 
 	int result = WiFiSocket.sendto(_socket, (void *)_sndBuffer, _sndSize, 0, (struct sockaddr *)&addr, sizeof(addr));
 
-    fkb_external_printf("WiFiUDP::endPacket(%d, %d) = %d\n", _socket, _sndSize, result);
+    // fkb_external_printf("WiFiUDP::endPacket(%d, %d) = %d\n", _socket, _sndSize, result);
 
 	return result;
 }
